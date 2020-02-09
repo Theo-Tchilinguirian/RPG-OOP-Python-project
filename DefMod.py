@@ -108,8 +108,8 @@ def start_screen():
     print(100 * '-' + '\n' + "Welcome to... 'RPG-The Game' !!".center(100) + '\n' + (75 * '-').center(100) + '\n')
 
 
-def welcome_back(pseudonyme, chapter):
-    print(100 * '-' + '\n' + "Welcome back, {}, back to CHAPTER {} . . .".center(100).format(pseudonyme, chapter) + '\n' + (75 * '-').center(100))
+def welcome(pseudonyme, chapter):
+    print(100 * '-' + '\n' + "Welcome, {}, to CHAPTER {} . . .".center(100).format(pseudonyme, chapter) + '\n' + (75 * '-').center(100))
 
 
 def show_player_list(player_list):
@@ -291,7 +291,7 @@ def login(player_list):
 def main(player_list):
     start_screen()
     player_list, pseudonyme, player_entity = login(player_list)
-    welcome_back(pseudonyme, player_entity.get_player_stats()['CHAPTER'])
+    welcome(pseudonyme, player_entity.get_player_stats()['CHAPTER'])
 
 player_list = charge_file()
 main(player_list)
