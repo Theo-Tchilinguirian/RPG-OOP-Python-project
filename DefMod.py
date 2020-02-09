@@ -75,8 +75,8 @@ class Priest(Player):
 # File Manipulation Functions Definitions # ----------------------------------------------------------------------------
 
 def charge_file():
-    if os.path.exists('DataPack/DataFile'):
-        with open('DataPack/DataFile', 'rb') as charge_file:
+    if os.path.exists('../DataPack/DataFile'):
+        with open('../DataPack/DataFile', 'rb') as charge_file:
             file_depickler = pickle.Unpickler(charge_file)
             player_list = file_depickler.load()
     else:
@@ -86,7 +86,7 @@ def charge_file():
 
 
 def save_file(player_list):
-    with open('DataPack/DataFile', 'wb') as save_file:
+    with open('../DataPack/DataFile', 'wb') as save_file:
         file_pickler = pickle.Pickler(save_file)
         file_pickler.dump(player_list)
 
