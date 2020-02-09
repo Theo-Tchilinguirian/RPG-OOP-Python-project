@@ -143,16 +143,19 @@ def check_answer_get_class_stats():
 
         if answer_class == 1:
             return 'Warrior'
-        if answer_class == 2:
+        elif answer_class == 2:
             return 'Mage'
-        if answer_class == 3:
+        elif answer_class == 3:
             return 'Soldier'
-        if answer_class == 4:
+        elif answer_class == 4:
             return 'Sorcerer'
-        if answer_class == 5:
+        elif answer_class == 5:
             return 'Gladiator'
-        if answer_class == 6:
+        elif answer_class == 6:
             return 'Priest'
+        else:
+            print("Your answer is not correct. Choose a number between 1 and 6")
+            continue
 
 
 # Job Functions # ------------------------------------------------------------------------------------------------------
@@ -162,21 +165,32 @@ def player_entity_maker(player_list, pseudonyme, password):
     Tied to 'check_answer_get_class_stats'
     adds a player with default settings to the player list
     """
-    cls = check_answer_get_class_stats()
-    if cls == 'Warrior':
-        player_entity = Warrior()
-    if cls == 'Mage':
-        player_entity = Mage()
-    if cls == 'Soldier':
-        player_entity = Soldier()
-    if cls == 'Sorcerer':
-        player_entity = Sorcerer()
-    if cls == 'Gladiator':
-        player_entity = Gladiator()
-    if cls == 'Priest':
-        player_entity = Priest()
 
-    player_list[pseudonyme] = (password, player_entity)#.get_player_stats())
+    condition = 1
+    while condition == 1:
+        cls = check_answer_get_class_stats()
+        if cls == 'Warrior':
+            player_entity = Warrior()
+            condition = 0
+        elif cls == 'Mage':
+            player_entity = Mage()
+            condition = 0
+        elif cls == 'Soldier':
+            player_entity = Soldier()
+            condition = 0
+        elif cls == 'Sorcerer':
+            player_entity = Sorcerer()
+            condition = 0
+        elif cls == 'Gladiator':
+            player_entity = Gladiator()
+            condition = 0
+        elif cls == 'Priest':
+            player_entity = Priest()
+            condition = 0
+        else:
+            continue
+
+    player_list[pseudonyme] = (password, player_entity)
 
     return player_list, pseudonyme, player_entity
 
@@ -246,6 +260,7 @@ def login(player_list):
 
     pseudonyme = input("""What is your pseudonyme?:
             >>> """)
+
     if player_in_player_list(player_list, pseudonyme) == False:
 
         if len(player_list) > 0:
@@ -284,8 +299,9 @@ def login(player_list):
         password = input("""What is your password ?:
                 >>> """)
 
-        if check_login(player_list, pseudonyme, password):
-            return player_entity_maker(player_list, pseudonyme, password)
+        if check_login(player_list, pseudonyme, password) == True:
+            player_entity = player_list[pseudonyme][1]
+            return player_list, pseudonyme, player_entity
 
 
 def main(player_list):
