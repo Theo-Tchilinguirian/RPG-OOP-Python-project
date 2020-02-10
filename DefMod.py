@@ -32,6 +32,28 @@ class Player:
         return self.player_stats
 
 
+    def set_current_new_chapter(self, player_list, pseudonyme):
+
+        current_chapter = self.player_stats['CHAPTER']
+
+        if current_chapter == 'I: THE RUINS':
+            new_chapter = 'II: DESOLATED LAND'
+
+        elif current_chapter == 'II: DESOLATED LAND':
+            new_chapter = 'III: CURSED TOWER'
+
+        elif current_chapter == 'II: DESOLATED LAND':
+            new_chapter = 'III: CURSED TOWER'
+
+        elif current_chapter == 'III: CURSED TOWER':
+            new_chapter = 'IV: MISTYC STAGE'
+
+        player_entity = self
+        player_list[pseudonyme][1] = player_entity
+
+        return player_list, player_entity
+
+
     def act_player_attacking(self):
 
         pass
@@ -202,6 +224,18 @@ def check_answer_get_class_stats():
             continue
 
 
+def ask_change_chapter(player_list, pseudonyme, player_entity):
+    player_current_level = player_entity.get_player_stats()['LEVEL']
+    player_current_chapter = player_entity.get_player_stats()['CHAPTER']
+    if player_current_level % 5 == 0 and player_current_chapter != 'IV: MISTYC STAGE':
+
+        answer = check_answer_get_yes_no("You are level {}. Do you want do go to the next level ?". format(player_current_level))
+        if answer == 'yes':
+            player_entity.set_current_new_chapter(player_list, pseudonyme)
+        else:
+            print("I won't be there for you at any time...")
+
+
 # Job Functions # ------------------------------------------------------------------------------------------------------
 
 def player_entity_maker(player_list, pseudonyme, password):
@@ -267,12 +301,6 @@ def next_level():
     # if lvl == 5:
     #     if perso[class] == gladiator:
     #         perso[class] == hoplite, puis au lvl 10: spartiate
-
-
-def next_chapter():
-    """
-    changer les stats des mobs
-    """
 
 
 def get_check_pseudonyme(pseudonyme):
@@ -360,6 +388,8 @@ def main(player_list):
     player_list, pseudonyme, password, player_entity = login(player_list)
     welcome(pseudonyme, player_entity.get_player_stats()['CHAPTER'])
     player_entity.player_level_up(player_list, pseudonyme)
+    ask_change_chapter(player_list, pseudonyme, player_entity)
+    print(player_list)
 
 player_list = charge_file()
 main(player_list)
