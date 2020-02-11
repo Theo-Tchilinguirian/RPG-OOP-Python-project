@@ -56,21 +56,12 @@ class Player:
         return player_list, player_entity
 
 
-    def act_player_attacking(self):
-
-        pass
-        if 'VIGOR' in self.player_stats:
-            pass
-        elif 'MANA' in self.player_stats:
-            pass
-
-
     def player_level_up(self, player_list, pseudonyme):
 
         kill_count_max = self.player_stats['KILLCOUNTMAX']
         current_player_kill_count = self.get_player_stats()['KILLCOUNT']
 
-        if current_player_kill_count % kill_count_max == 0:
+        if current_player_kill_count % kill_count_max == 0 and current_player_kill_count != 0:
 
             for stat_key, current_stat_value in self.player_stats.items():
 
@@ -149,12 +140,12 @@ class Priest(Player):
         self.set_stat_value('BASEMANA', bmn)
 
 
-# Ennemy Entities #
+# Ennemy Entities # ----------------------------------------------------------------------------------------------------
 
 class Ennemy:
 
-    def __init__(self, typ, hp, atk, dfs, chp):
-        self.ennemy_stats = {'TYPE': typ, 'HP': hp, 'ATTACK': atk, 'DEFENSE': dfs, 'CHAPTER': chp}
+    def __init__(self, typ, hp, atk, dfs, chp, mnw):
+        self.ennemy_stats = {'TYPE': typ, 'HP': hp, 'ATTACK': atk, 'DEFENSE': dfs, 'CHAPTER': chp, 'MONEYWORTH': mnw}
 
 
     def set_stat_value(self, stat_key, stat_new_value):
@@ -169,61 +160,61 @@ class Ennemy:
 class Bat(Ennemy):
 
     def __init__(self):
-        Ennemy.__init__(self, typ = 'Bat', hp = 5, atk = 3, dfs = 0, chp = 'I: THE RUINS')
+        Ennemy.__init__(self, typ = 'Bat', hp = 5, atk = 3, dfs = 0, chp = 'I: THE RUINS', mnw = 1)
 
 
 class Slime(Ennemy):
 
     def __init__(self):
-        Ennemy.__init__(self, typ = 'Slime', hp = 10, atk = 5, dfs = 0, chp = 'I: THE RUINS')
+        Ennemy.__init__(self, typ = 'Slime', hp = 10, atk = 5, dfs = 0, chp = 'I: THE RUINS', mnw = 2)
 
 
 class Spider(Ennemy):
 
     def __init__(self):
-        Ennemy.__init__(self, typ = 'Spider', hp = 15, atk = 8, dfs = 3, chp = 'I: THE RUINS')
+        Ennemy.__init__(self, typ = 'Spider', hp = 15, atk = 8, dfs = 3, chp = 'I: THE RUINS', mnw = 4)
 
 
 class RabidWolf(Ennemy):
 
     def __init__(self):
-        Ennemy.__init__(self, typ = 'Rabid Wolf', hp = 25, atk = 12, dfs = 5, chp = 'II: DESOLATED LAND')
+        Ennemy.__init__(self, typ = 'Rabid Wolf', hp = 25, atk = 12, dfs = 5, chp = 'II: DESOLATED LAND', mnw = 5)
 
 
 class DarkWizard(Ennemy):
 
     def __init__(self):
-        Ennemy.__init__(self, typ = 'Dark Wizard', hp = 50, atk = 20, dfs = 10, chp = 'II: DESOLATED LAND')
+        Ennemy.__init__(self, typ = 'Dark Wizard', hp = 50, atk = 20, dfs = 10, chp = 'II: DESOLATED LAND', mnw = 10)
 
 
 class CorruptedSpirit(Ennemy):
 
     def __init__(self):
-        Ennemy.__init__(self, typ = 'Corrupted Spirit', hp = 75, atk = 25, dfs = 8, chp = 'II: DESOLATED LAND')
+        Ennemy.__init__(self, typ = 'Corrupted Spirit', hp = 75, atk = 25, dfs = 8, chp = 'II: DESOLATED LAND', mnw = 20)
 
 
 class Skeleton(Ennemy):
 
     def __init__(self):
-        Ennemy.__init__(self, typ = 'Skeleton', hp = 40, atk = 10, dfs = 5, chp = 'III: CURSED TOWER')
+        Ennemy.__init__(self, typ = 'Skeleton', hp = 40, atk = 10, dfs = 5, chp = 'III: CURSED TOWER', mnw = 15)
 
 
 class Goblin(Ennemy):
 
     def __init__(self):
-        Ennemy.__init__(self, typ = 'Goblin', hp = 10, atk = 5, dfs = 8, chp = 'III: CURSED TOWER')
+        Ennemy.__init__(self, typ = 'Goblin', hp = 10, atk = 5, dfs = 8, chp = 'III: CURSED TOWER', mnw = 5)
 
 
 class FallenWarrior(Ennemy):
 
     def __init__(self):
-        Ennemy.__init__(self, typ = 'Fallen Warrior', hp = 65, atk = 25, dfs = 15, chp = 'III: CURSED TOWER')
+        Ennemy.__init__(self, typ = 'Fallen Warrior', hp = 65, atk = 25, dfs = 15, chp = 'III: CURSED TOWER', mnw = 30)
 
 
 class Dragon(Ennemy):
 
     def __init__(self):
-        Ennemy.__init__(self, typ = 'Dragon', hp = 250, atk = 45, dfs = 25, chp = 'IV: MISTYC STAGE')
+        Ennemy.__init__(self, typ = 'Dragon', hp = 250, atk = 45, dfs = 25, chp = 'IV: MISTYC STAGE', mnw = 500)
 
 
 # File Manipulation Functions Definitions # ----------------------------------------------------------------------------
@@ -320,11 +311,306 @@ def ask_change_chapter(player_list, pseudonyme, player_entity):
         answer = check_answer_get_yes_no("You are level {}. Do you want do go to the next chapter ?". format(player_current_level))
         if answer == 'yes':
             player_entity.set_current_new_chapter(player_list, pseudonyme)
+            welcome(pseudonyme, player_entity.get_player_stats()['CHAPTER'])
         else:
             print("I won't be there for you at any time...")
 
 
+def get_menu_choice(player_entity, player_list, pseudonyme, current_ennemy):
+    player_entity
+    end = False
+    while end == False:
+        try:
+            print('\n' + (75 * '-').center(100) + '\n' + "GAME MENU".center(100) + '\n' + (75 * '-').center(100))
+            answer_menu = int(input("""
+            1. Return to battle
+            2. Go to the Shop
+            3. See your Stats
+            4. Quit and Save the Game
+            >>> """))
+            end = True
+
+        except ValueError:
+            print("Your answer is not correct. Choose a number between 1 and 6")
+            continue
+
+        if answer_menu == 1:
+            battle(player_list, pseudonyme, current_ennemy)
+            end = True
+
+        elif answer_menu == 2:
+            get_shop_choice(player_entity)
+            end = True
+
+        elif answer_menu == 3:
+            show_player_stats(player_entity)
+            end = True
+
+        elif answer_menu == 4:
+            answer_buy_again = check_answer_get_yes_no("Are you sure you want to quit ?")
+            if answer_buy_again == 'no':
+                get_menu_choice(player_entity, player_list, pseudonyme, current_ennemy)
+
+            end = True
+
+        else:
+            print("Your answer is not correct. Choose a number between 1 and 6")
+            continue
+
+    return end
+
+
+def get_shop_choice(player_entity):
+    end = False
+    while end == False:
+        try:
+            print('\n' + (75 * '-').center(100) + '\n' + "SHOP".center(100) + '\n' + (75 * '-').center(100) + '\n')
+
+            answer_shop = int(input("""Welcome to the shop, fellow adventurer !!
+            What do you want to buy ? We have:
+            1- Healing Potion (regens 20 hp) for 15 $
+            2- Restoration Potion (regens 20 mana or vigor) for 15$
+            3- Armor (+ 5 DFS) for 25 $
+            4- Weapons (+ 5 ATK) for 25$
+            5- Quit
+            >>> """))
+            end = True
+
+        except ValueError:
+            print("Your answer is not correct. Choose a number between 1 and 6")
+            continue
+
+        if answer_shop == 1:
+            buy_item(answer_shop, player_entity, 15)
+            continue
+
+        elif answer_shop == 2:
+            buy_item(answer_shop, player_entity, 15)
+            continue
+
+        elif answer_shop == 3:
+            buy_item(answer_shop, player_entity, 25)
+            continue
+
+        elif answer_shop == 4:
+            buy_item(answer_shop, player_entity, 25)
+            continue
+
+        elif answer_shop == 5:
+            end = True
+
+        else:
+            print("Your answer is not correct. Choose a number between 1 and 5")
+            continue
+
+
+def show_player_stats(player_entity):
+    print("Your Stats:")
+    try:
+        print("""
+        {0} --> {1}
+        {2} --> {3}
+        {4} --> {5}
+        {6} --> {7}
+        {8} --> {9}
+        {10} --> {11}
+        
+        """.format("HP", player_entity.get_player_stats()['HP'],
+                   "MAX HP", player_entity.get_player_stats()['BASEHP'],
+                   "MANA", player_entity.get_player_stats()['MANA'],
+                   "MAX MANA", player_entity.get_player_stats()['BASEMANA'],
+                   "MONEY", player_entity.get_player_stats()['MONEY'],
+                   "KILL COUNT", player_entity.get_player_stats()['KILLCOUNT']))
+
+    except KeyError:
+        print("""{0} --> {1}
+        {2} --> {3}
+        {4} --> {5}
+        {6} --> {7}
+        {8} --> {9}
+        {10} --> {11}
+        """.format("HP", player_entity.get_player_stats()['HP'],
+                   "MAX HP", player_entity.get_player_stats()['BASEHP'],
+                   "VIGOR", player_entity.get_player_stats()['VIGOR'],
+                   "MAX VIGOR", player_entity.get_player_stats()['BASEVIGOR'],
+                   "MONEY", player_entity.get_player_stats()['MONEY'],
+                   "KILL COUNT", player_entity.get_player_stats()['KILLCOUNT']))
+
+
+def show_current_ennemy_stats(current_enemy):
+    ennemy_type = current_enemy.get_ennemy_stats()['TYPE']
+    print("{}'s Health:".format(ennemy_type))
+    print("""{0} --> {1}
+    """.format("HP", current_enemy.get_ennemy_stats()['HP']))
+
 # Job Functions # ------------------------------------------------------------------------------------------------------
+
+def battle(player_list, pseudonyme, current_ennemy):
+    player_entity = player_list[pseudonyme][1]
+    current_ennemy_type = current_ennemy.get_ennemy_stats()['TYPE']
+    player_energy_class, player_energy_used = get_player_mana_or_vigor_used_on_attack(player_entity)
+    who_attacks_first = get_who_attacks_first()  # returns 'PLAYER' or 'ENNEMY'
+
+    show_player_stats(player_entity)
+
+    player_attack_points_on_ennemy = get_player_attack_points_on_ennemy(player_entity, current_ennemy)
+    current_ennemy_attack_points_on_player = get_ennemy_attack_points_on_player(player_entity, current_ennemy)
+
+    if who_attacks_first == 'PLAYER':
+        print("You attack {} !".format(current_ennemy_type))
+        show_current_ennemy_stats(current_ennemy)
+
+        end = False
+        while end == False:
+            input()
+            player_attack_on_ennemy(player_entity, player_attack_points_on_ennemy, current_ennemy, player_energy_class, player_energy_used)
+            show_current_ennemy_stats(current_ennemy)
+
+            input()
+            ennemy_attack_on_player(current_ennemy_attack_points_on_player, player_entity)
+            show_player_stats(player_entity)
+
+            if get_set_is_ennemy_dead_and_add_player_money_if_it_is_dead(player_list, pseudonyme, current_ennemy):
+                end = True
+                current_ennemy = current_ennemy_entity_maker(player_list, pseudonyme)
+
+                return current_ennemy
+
+            else:
+                continue
+
+    elif who_attacks_first == 'ENNEMY':
+        print("{} attacks you !".format(current_ennemy_type))
+        show_current_ennemy_stats(current_ennemy)
+
+        end = False
+        while end == False:
+            input()
+            ennemy_attack_on_player(current_ennemy_attack_points_on_player, player_entity)
+            show_player_stats(player_entity)
+            input()
+            player_attack_on_ennemy(player_entity, player_attack_points_on_ennemy, current_ennemy, player_energy_class, player_energy_used)
+            show_current_ennemy_stats(current_ennemy)
+
+            get_set_is_ennemy_dead(player_list, pseudonyme, current_ennemy)
+
+            if get_set_is_ennemy_dead_and_add_player_money_if_it_is_dead(player_list, pseudonyme, current_ennemy):
+                end = True
+                current_ennemy = current_ennemy_entity_maker(player_list, pseudonyme)
+
+                return current_ennemy
+
+            else:
+                continue
+
+
+def get_set_is_ennemy_dead_and_add_player_money_if_it_is_dead(player_list, pseudonyme, current_ennemy):
+    player_entity = player_list[pseudonyme][1]
+    current_ennemy_hp = current_ennemy.get_ennemy_stats()['HP']
+    current_ennemy_money_earnable = current_ennemy.get_ennemy_stats()['MONEYWORTH']
+    player_kill_count = player_entity.get_player_stats()['KILLCOUNT']
+    player_money = player_entity.get_player_stats()['MONEY']
+
+    if current_ennemy_hp <= 0:
+        player_entity.set_stat_value('KILLCOUNT', player_kill_count + 1)
+        player_entity.set_stat_value('MONEY', player_money + current_ennemy_money_earnable)
+
+        return True
+
+    else:
+
+        return False
+
+def deduct_money(player_entity, price):
+    current_money = player_entity.get_player_stats()['MONEY']
+
+    if current_money <= 0:
+        can_pay = 'no'
+        new_money = 0
+        player_entity.set_stat_value('MONEY', new_money)
+
+    elif current_money >= price:
+        can_pay = 'yes'
+        new_money = current_money - price
+        player_entity.set_stat_value('MONEY', new_money)
+
+    elif current_money < price:
+        can_pay = 'no'
+
+    return can_pay
+
+
+def buy_item(answer_shop, player_entity, price):
+    current_money = player_entity.get_player_stats()['MONEY']
+
+    if answer_shop == 1:
+        if player_entity.get_player_stats()['HP'] == player_entity.get_player_stats()['BASEHP']:
+            print("You have MAX HP")
+
+        else:
+            can_pay = deduct_money(player_entity, price)
+
+            if can_pay == 'yes':
+                player_entity.set_stat_value('HP', player_entity.get_player_stats()['HP'] + 20)
+                print("You now have {} HP.".format(player_entity.get_player_stats()['HP']))
+
+            else:
+                print("You can't pay, you don't have enough money.")
+                print("You have {} money".format(current_money))
+
+    elif answer_shop == 2:
+        try:
+            if player_entity.get_player_stats()['MANA'] == player_entity.get_player_stats()['BASEMANA']:
+                print("You have MAX MANA")
+
+            else:
+                can_pay = deduct_money(player_entity, price)
+
+                if can_pay == 'yes':
+                    player_entity.set_stat_value('MANA', player_entity.get_player_stats()['MANA'] + 20)
+                    print("You now have {} MANA.".format(player_entity.get_player_stats()['MANA']))
+
+                else:
+                    print("You can't pay, you don't have enough money.")
+                    print("You have {} money".format(current_money))
+
+        except KeyError:
+            if player_entity.get_player_stats()['VIGOR'] == player_entity.get_player_stats()['BASEVIGOR']:
+                print("You have MAX VIGOR")
+
+            else:
+                can_pay = deduct_money(player_entity, price)
+
+                if can_pay == 'yes':
+                    player_entity.set_stat_value('VIGOR', player_entity.get_player_stats()['VIGOR'] + 20)
+                    print("You now have {} VIGOR.".format(player_entity.get_player_stats()['VIGOR']))
+
+                else:
+                    print("You can't pay, you don't have enough money.")
+                    print("You have {} money".format(current_money))
+
+    elif answer_shop == 3:
+        can_pay = deduct_money(player_entity, price)
+
+        if can_pay == 'yes':
+            player_entity.set_stat_value('DEFENSE', player_entity.get_player_stats()['DEFENSE'] + 5)
+            print("You now have {} DEFENSE.".format(player_entity.get_player_stats()['DEFENSE']))
+
+        else:
+            print("You can't pay, you don't have enough money.")
+            print("You have {} money".format(current_money))
+
+    elif answer_shop == 4:
+        can_pay = deduct_money(player_entity, price)
+
+        if can_pay == 'yes':
+            player_entity.set_stat_value('ATTACK', player_entity.get_player_stats()['ATTACK'] + 5)
+            print("You now have {} ATTACK.".format(player_entity.get_player_stats()['ATTACK']))
+
+        else:
+            print("You can't pay, you don't have enough money.")
+            print("You have {} money".format(current_money))
+
 
 def player_entity_maker(player_list, pseudonyme, password):
     """
@@ -468,7 +754,22 @@ def get_ennemy_attack_points_on_player(player_entity, current_ennemy):
     return current_ennemy_attack_points_on_player
 
 
-def player_attack_on_ennemy(player_attack_points_on_ennemy, current_ennemy):
+def get_player_mana_or_vigor_used_on_attack(player_entity):
+    if 'MANA' in player_entity.get_player_stats():
+        base_mana = player_entity.get_player_stats()['BASEMANA']
+        mana_used = base_mana / 10
+
+        return 'MANA', mana_used
+
+    elif 'VIGOR' in player_entity.get_player_stats():
+        base_vigor = player_entity.get_player_stats()['BASEVIGOR']
+        vigor_used = base_vigor / 10
+
+        return 'VIGOR', vigor_used
+
+
+def player_attack_on_ennemy(player_entity, player_attack_points_on_ennemy, current_ennemy, player_energy_class, player_energy_used):
+
     current_ennemy_hp = current_ennemy.get_ennemy_stats()['HP']
 
     if current_ennemy_hp <= player_attack_points_on_ennemy:
@@ -478,6 +779,16 @@ def player_attack_on_ennemy(player_attack_points_on_ennemy, current_ennemy):
         current_ennemy_new_hp = current_ennemy_hp - player_attack_points_on_ennemy
 
     current_ennemy.set_stat_value('HP', current_ennemy_new_hp)
+
+    if player_energy_class == 'MANA':
+        player_mana = player_entity.get_player_stats()['MANA']
+        new_player_mana = player_mana - player_energy_used
+        player_entity.set_stat_value('MANA', new_player_mana)
+
+    elif player_energy_class == 'VIGOR':
+        player_vigor = player_entity.get_player_stats()['VIGOR']
+        new_player_vigor = player_vigor - player_energy_used
+        player_entity.set_stat_value('VIGOR', new_player_vigor)
 
     # Does not return anything, works directly on the ennemy object that stays changed even out of the function
 
@@ -580,17 +891,19 @@ def main(player_list):
     start_screen()
     player_list, pseudonyme, password, player_entity = login(player_list)
     welcome(pseudonyme, player_entity.get_player_stats()['CHAPTER'])
-    player_entity.player_level_up(player_list, pseudonyme)
-    ask_change_chapter(player_list, pseudonyme, player_entity)
-    print(player_entity.player_stats)
-    current_ennemy = current_ennemy_entity_maker(player_list, pseudonyme)
-    print(current_ennemy.ennemy_stats)
-    player_attack_points_on_ennemy = get_player_attack_points_on_ennemy(player_entity, current_ennemy)
-    current_ennemy_attack_points_on_player = get_ennemy_attack_points_on_player(player_entity, current_ennemy)
-    player_attack_on_ennemy(player_attack_points_on_ennemy, current_ennemy)
-    print(current_ennemy.ennemy_stats)
-    ennemy_attack_on_player(current_ennemy_attack_points_on_player, player_entity)
-    print(player_entity.player_stats)
+
+    end = False
+    while end == False:
+
+        player_entity.player_level_up(player_list, pseudonyme)
+        ask_change_chapter(player_list, pseudonyme, player_entity)
+
+        current_ennemy = current_ennemy_entity_maker(player_list, pseudonyme)
+
+        end = get_menu_choice(player_entity, player_list, pseudonyme, current_ennemy)
+
+        current_ennemy = battle(player_list, pseudonyme, current_ennemy)
+
 
 player_list = charge_file()
 main(player_list)
