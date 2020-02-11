@@ -100,8 +100,6 @@ class Player:
         return player_list, player_entity
 
 
-# mana? vigueur?
-
 class Warrior(Player):
 
     def __init__(self, vig = 80, bvg = 80):
@@ -136,7 +134,7 @@ class Mage(Player):
 
 class Sorcerer(Player):
 
-    def __init__(self, mana: object = 80, bmn: object = 80) -> object:
+    def __init__(self, mana = 80, bmn = 80):
         Player.__init__(self, cls='Sorcerer', lvl = 1, mon = 0, hp = 110, atk = 30, dfs = 30, chp = 'I: THE RUINS', klc = 0, bhp = 110, kcm = 5)
         self.set_stat_value('MANA', mana)
         self.set_stat_value('BASEMANA', bmn)
@@ -158,14 +156,14 @@ class Ennemy:
     def __init__(self, typ, hp, atk, dfs, chp):
         self.ennemy_stats = {'TYPE': typ, 'HP': hp, 'ATTACK': atk, 'DEFENSE': dfs, 'CHAPTER': chp}
 
+
     def set_stat_value(self, stat_key, stat_new_value):
         self.ennemy_stats[stat_key] = stat_new_value
 
-    def get_ennemy_stats(self):
-        return self.ennemy_stats
 
-    def act_ennemy_attacking(self):
-        pass
+    def get_ennemy_stats(self):
+
+        return self.ennemy_stats
 
 
 class Bat(Ennemy):
@@ -443,6 +441,70 @@ def get_check_password(password):
     if len(password) <= 4:
         print('')
 
+
+def get_player_attack_points_on_ennemy(player_entity, current_ennemy):
+    player_attack_points = player_entity.get_player_stats()['ATTACK']
+    current_ennemy_defense_points = current_ennemy.get_ennemy_stats()['DEFENSE']
+
+    if player_attack_points > current_ennemy_defense_points:
+        player_attack_points_on_ennemy = player_attack_points - current_ennemy_defense_points
+
+    else:
+        player_attack_points_on_ennemy = 1
+
+    return player_attack_points_on_ennemy
+
+
+def get_ennemy_attack_points_on_player(player_entity, current_ennemy):
+    current_ennemy_attack_points = current_ennemy.get_ennemy_stats()['ATTACK']
+    player_defense_points = player_entity.get_player_stats()['DEFENSE']
+
+    if current_ennemy_attack_points > player_defense_points:
+        current_ennemy_attack_points_on_player = current_ennemy_attack_points - player_defense_points
+
+    else:
+        current_ennemy_attack_points_on_player = 1
+
+    return current_ennemy_attack_points_on_player
+
+
+def player_attack_on_ennemy(player_attack_points_on_ennemy, current_ennemy):
+    current_ennemy_hp = current_ennemy.get_ennemy_stats()['HP']
+
+    if current_ennemy_hp <= player_attack_points_on_ennemy:
+        current_ennemy_new_hp = 0
+
+    else:
+        current_ennemy_new_hp = current_ennemy_hp - player_attack_points_on_ennemy
+
+    current_ennemy.set_stat_value('HP', current_ennemy_new_hp)
+
+    # Does not return anything, works directly on the ennemy object that stays changed even out of the function
+
+
+def ennemy_attack_on_player(current_ennemy_attack_points_on_player, player_entity):
+    player_hp = player_entity.get_player_stats()['HP']
+
+    if player_hp <= current_ennemy_attack_points_on_player:
+        player_new_hp = 0
+
+    else:
+        player_new_hp = player_hp - current_ennemy_attack_points_on_player
+
+    player_entity.set_stat_value('HP', player_new_hp)
+
+    # Does not return anything, works directly on the player object that stays changed even out of the function
+
+
+def get_who_attacks_first():
+    random_half = random.randint(1, 100)
+
+    if 0 < random_half <= 100:
+        return 'PLAYER'
+
+    else:
+        return 'ENNEMY'
+
 # Main Functions # ------------------------------------------------------------------------------------------------------
 
 def login(player_list):
@@ -522,7 +584,13 @@ def main(player_list):
     ask_change_chapter(player_list, pseudonyme, player_entity)
     print(player_entity.player_stats)
     current_ennemy = current_ennemy_entity_maker(player_list, pseudonyme)
-    print(current_ennemy)
+    print(current_ennemy.ennemy_stats)
+    player_attack_points_on_ennemy = get_player_attack_points_on_ennemy(player_entity, current_ennemy)
+    current_ennemy_attack_points_on_player = get_ennemy_attack_points_on_player(player_entity, current_ennemy)
+    player_attack_on_ennemy(player_attack_points_on_ennemy, current_ennemy)
+    print(current_ennemy.ennemy_stats)
+    ennemy_attack_on_player(current_ennemy_attack_points_on_player, player_entity)
+    print(player_entity.player_stats)
 
 player_list = charge_file()
 main(player_list)
