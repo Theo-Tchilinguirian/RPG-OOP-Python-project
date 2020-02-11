@@ -136,7 +136,7 @@ class Mage(Player):
 
 class Sorcerer(Player):
 
-    def __init__(self, mana = 80, bmn = 80):
+    def __init__(self, mana: object = 80, bmn: object = 80) -> object:
         Player.__init__(self, cls='Sorcerer', lvl = 1, mon = 0, hp = 110, atk = 30, dfs = 30, chp = 'I: THE RUINS', klc = 0, bhp = 110, kcm = 5)
         self.set_stat_value('MANA', mana)
         self.set_stat_value('BASEMANA', bmn)
@@ -151,6 +151,81 @@ class Priest(Player):
         self.set_stat_value('BASEMANA', bmn)
 
 
+# Ennemy Entities #
+
+class Ennemy:
+
+    def __init__(self, typ, hp, atk, dfs, chp):
+        self.ennemy_stats = {'TYPE': typ, 'HP': hp, 'ATTACK': atk, 'DEFENSE': dfs, 'CHAPTER': chp}
+
+    def set_stat_value(self, stat_key, stat_new_value):
+        self.ennemy_stats[stat_key] = stat_new_value
+
+    def get_ennemy_stats(self):
+        return self.ennemy_stats
+
+    def act_ennemy_attacking(self):
+        pass
+
+
+class Bat(Ennemy):
+
+    def __init__(self):
+        Ennemy.__init__(self, typ = 'Bat', hp = 5, atk = 3, dfs = 0, chp = 'I: THE RUINS')
+
+
+class Slime(Ennemy):
+
+    def __init__(self):
+        Ennemy.__init__(self, typ = 'Slime', hp = 10, atk = 5, dfs = 0, chp = 'I: THE RUINS')
+
+
+class Spider(Ennemy):
+
+    def __init__(self):
+        Ennemy.__init__(self, typ = 'Spider', hp = 15, atk = 8, dfs = 3, chp = 'I: THE RUINS')
+
+
+class RabidWolf(Ennemy):
+
+    def __init__(self):
+        Ennemy.__init__(self, typ = 'Rabid Wolf', hp = 25, atk = 12, dfs = 5, chp = 'II: DESOLATED LAND')
+
+
+class DarkWizard(Ennemy):
+
+    def __init__(self):
+        Ennemy.__init__(self, typ = 'Dark Wizard', hp = 50, atk = 20, dfs = 10, chp = 'II: DESOLATED LAND')
+
+
+class CorruptedSpirit(Ennemy):
+
+    def __init__(self):
+        Ennemy.__init__(self, typ = 'Corrupted Spirit', hp = 75, atk = 25, dfs = 8, chp = 'II: DESOLATED LAND')
+
+
+class Skeleton(Ennemy):
+
+    def __init__(self):
+        Ennemy.__init__(self, typ = 'Skeleton', hp = 40, atk = 10, dfs = 5, chp = 'III: CURSED TOWER')
+
+
+class Goblin(Ennemy):
+
+    def __init__(self):
+        Ennemy.__init__(self, typ = 'Goblin', hp = 10, atk = 5, dfs = 8, chp = 'III: CURSED TOWER')
+
+
+class FallenWarrior(Ennemy):
+
+    def __init__(self):
+        Ennemy.__init__(self, typ = 'Fallen Warrior', hp = 65, atk = 25, dfs = 15, chp = 'III: CURSED TOWER')
+
+
+class Dragon(Ennemy):
+
+    def __init__(self):
+        Ennemy.__init__(self, typ = 'Dragon', hp = 250, atk = 45, dfs = 25, chp = 'IV: MISTYC STAGE')
 
 
 # File Manipulation Functions Definitions # ----------------------------------------------------------------------------
@@ -288,6 +363,47 @@ def player_entity_maker(player_list, pseudonyme, password):
     return player_list, pseudonyme, password, player_entity
 
 
+def current_ennemy_entity_maker(player_list, pseudonyme):
+    player_entity = player_list[pseudonyme][1]
+    current_chapter = player_entity.get_player_stats()['CHAPTER']
+    current_ennemy_spawned_type_range = random.randint(1, 100)
+
+    if current_chapter == 'I: THE RUINS':
+        if 0 < current_ennemy_spawned_type_range <= 40:  # 40% chances to appear
+            current_ennemy = Slime()
+
+        elif 40 < current_ennemy_spawned_type_range <= 75:
+            current_ennemy = Bat()
+
+        elif 75 < current_ennemy_spawned_type_range <= 100:
+            current_ennemy = Spider()
+
+    elif current_chapter == 'II: DESOLATED LAND':
+        if 0 < current_ennemy_spawned_type_range <= 75:
+            current_ennemy = RabidWolf()
+
+        elif 75 < current_ennemy_spawned_type_range <= 90:
+            current_ennemy = DarkWizard()
+
+        elif 90 < current_ennemy_spawned_type_range <= 100:
+            current_ennemy = CorruptedSpirit()
+
+    elif current_chapter == 'III: CURSED TOWER':
+        if 0 < current_ennemy_spawned_type_range <= 25:
+            current_ennemy = Skeleton()
+
+        elif 25 < current_ennemy_spawned_type_range <= 85:
+            current_ennemy = Goblin()
+
+        elif 85 < current_ennemy_spawned_type_range <= 100:
+            current_ennemy = FallenWarrior()
+
+    elif current_chapter == 'IV: MISTYC STAGE':  # 100% chances to appear
+        current_ennemy = Dragon()
+
+    return current_ennemy
+
+
 def check_login(player_list, pseudonyme, password):
     if player_list[pseudonyme][0] == password:
         return True
@@ -405,6 +521,8 @@ def main(player_list):
     player_entity.player_level_up(player_list, pseudonyme)
     ask_change_chapter(player_list, pseudonyme, player_entity)
     print(player_entity.player_stats)
+    current_ennemy = current_ennemy_entity_maker(player_list, pseudonyme)
+    print(current_ennemy)
 
 player_list = charge_file()
 main(player_list)
