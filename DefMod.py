@@ -65,8 +65,11 @@ class Player:
 
             for stat_key, current_stat_value in self.player_stats.items():
 
-                if stat_key == 'LEVEL' or stat_key == 'KILLCOUNTMAX':
+                if stat_key == 'LEVEL':
                     self.set_stat_value(stat_key, current_stat_value + 1)
+
+                elif stat_key == 'KILLCOUNTMAX':
+                    self.set_stat_value(stat_key, current_stat_value + 3)  # VERY TIED to line 308 'ask_change_chapter' --> condition if ... and current_player_kill_count % kill_count_max == kill_count_max - 3(HERE) and ...
 
                 elif stat_key == 'BASEHP':
                     new_stat_value = round(current_stat_value + (current_stat_value * 15) / 100)
@@ -303,19 +306,22 @@ def check_answer_get_class_stats():
 
 
 def ask_change_chapter(player_list, pseudonyme, player_entity):
+    current_player_kill_count = player_entity.get_player_stats()['KILLCOUNT']
+    kill_count_max = player_entity.get_player_stats()['KILLCOUNTMAX']
     player_current_level = player_entity.get_player_stats()['LEVEL']
     player_current_chapter = player_entity.get_player_stats()['CHAPTER']
-    if player_current_level % 5 == 0 and player_current_chapter != 'IV: MISTYC STAGE':
+
+    if player_current_level % 5 == 0 and current_player_kill_count % kill_count_max == kill_count_max - 3 and player_current_chapter != 'IV: MISTYC STAGE':
 
         answer = check_answer_get_yes_no("You are level {}. Do you want do go to the next chapter ?". format(player_current_level))
         if answer == 'yes':
             player_entity.set_current_new_chapter(player_list, pseudonyme)
             welcome(pseudonyme, player_entity.get_player_stats()['CHAPTER'])
         else:
-            print("I won't be there for you at any time...")
+            print("It will be harder next time...")
 
 
-def get_menu_choice(player_entity, player_list, pseudonyme, current_ennemy):
+def get_menu_choice(player_entity, player_list, pseudonyme):
     end = False
     while end == False:
         try:
@@ -326,6 +332,7 @@ def get_menu_choice(player_entity, player_list, pseudonyme, current_ennemy):
             3. See your Stats
             4. Quit and Save the Game
             >>> """))
+            print('\n')
             end = True
 
         except ValueError:
@@ -333,8 +340,12 @@ def get_menu_choice(player_entity, player_list, pseudonyme, current_ennemy):
             continue
 
         if answer_menu == 1:
-            battle(player_list, pseudonyme, current_ennemy)
-            end = True
+            current_ennemy = current_ennemy_entity_maker(player_list, pseudonyme)
+            print("You roam around the battle field looking for an ennemy...")
+            del_player = battle(player_list, pseudonyme, current_ennemy)
+
+            if del_player == 'del player_list':
+                return del_player
 
         elif answer_menu == 2:
             get_shop_choice(player_entity)
@@ -345,7 +356,6 @@ def get_menu_choice(player_entity, player_list, pseudonyme, current_ennemy):
             end = True
 
         elif answer_menu == 4:
-            end = True
 
             return 'quit'
 
@@ -361,12 +371,13 @@ def get_shop_choice(player_entity):
     while end == False:
         try:
             print('\n' + (75 * '-').center(100) + '\n' + "SHOP".center(100) + '\n' + (75 * '-').center(100) + '\n')
+            print("You have {}$".format(player_entity.get_player_stats()['MONEY']))
 
             answer_shop = int(input("""Welcome to the shop, fellow adventurer !!
             What do you want to buy ? We have:
-            1- Healing Potion (regens 20 hp) for 15 $
+            1- Healing Potion (regens 20 hp) for 15$
             2- Restoration Potion (regens 20 mana or vigor) for 15$
-            3- Armor (+ 5 DFS) for 25 $
+            3- Armor (+ 5 DFS) for 25$
             4- Weapons (+ 5 ATK) for 25$
             5- Quit
             >>> """))
@@ -403,33 +414,44 @@ def get_shop_choice(player_entity):
 def show_player_stats(player_entity):
     print("Your Stats:")
     try:
-        print("""    {0} --> {1}
-    {2} --> {3}
-    {4} --> {5}
-    {6} --> {7}
+        print("""    {0}/{2} --> {1}/{3}
+    {4}/{6} --> {5}/{7}
+    {16} --> {17}
+    {18} --> {19}
     {8} --> {9}
     {10} --> {11}
-        
+    {12} --> {13}
+    {14} --> {15}
         """.format("HP", player_entity.get_player_stats()['HP'],
                    "MAX HP", player_entity.get_player_stats()['BASEHP'],
                    "MANA", player_entity.get_player_stats()['MANA'],
                    "MAX MANA", player_entity.get_player_stats()['BASEMANA'],
+                   "LEVEL", player_entity.get_player_stats()['LEVEL'],
                    "MONEY", player_entity.get_player_stats()['MONEY'],
-                   "KILL COUNT", player_entity.get_player_stats()['KILLCOUNT']))
+                   "KILL COUNT", player_entity.get_player_stats()['KILLCOUNT'],
+                   "KILLS TO NEXT LVL", player_entity.get_player_stats()['KILLCOUNTMAX'],
+                   "ATTACK PTS", player_entity.get_player_stats()['ATTACK'],
+                   "DEFENSE PTS", player_entity.get_player_stats()['DEFENSE']))
 
     except KeyError:
-        print("""    {0} --> {1}
-        {2} --> {3}
-        {4} --> {5}
-        {6} --> {7}
-        {8} --> {9}
-        {10} --> {11}
+        print("""    {0}/{2} --> {1}/{3}
+    {4}/{6} --> {5}/{7}
+    {16} --> {17}
+    {18} --> {19}
+    {8} --> {9}
+    {10} --> {11}
+    {12} --> {13}
+    {14} --> {15}
         """.format("HP", player_entity.get_player_stats()['HP'],
                    "MAX HP", player_entity.get_player_stats()['BASEHP'],
                    "VIGOR", player_entity.get_player_stats()['VIGOR'],
                    "MAX VIGOR", player_entity.get_player_stats()['BASEVIGOR'],
+                   "LEVEL", player_entity.get_player_stats()['LEVEL'],
                    "MONEY", player_entity.get_player_stats()['MONEY'],
-                   "KILL COUNT", player_entity.get_player_stats()['KILLCOUNT']))
+                   "KILL COUNT", player_entity.get_player_stats()['KILLCOUNT'],
+                   "KILLS TO NEXT LVL", player_entity.get_player_stats()['KILLCOUNTMAX'],
+                   "ATTACK PTS", player_entity.get_player_stats()['ATTACK'],
+                   "DEFENSE PTS", player_entity.get_player_stats()['DEFENSE']))
     input()
 
 
@@ -496,13 +518,13 @@ def battle_check_player_first(player_list, pseudonyme, player_entity, current_en
 
         elif get_if_player_dead(player_entity) == True:
             print("You died. your name will forever be forgotten. May you and your miserable adventure go to the void and never return.")
-            del player_list[pseudonyme]
+
+            return 'player dead'
 
         ennemy_attack_on_player(current_ennemy_attack_points_on_player, player_entity, current_ennemy)
         show_player_stats(player_entity)
 
-        if get_set_is_ennemy_dead_and_add_player_money_if_it_is_dead(player_list, pseudonyme, current_ennemy) == True and get_if_player_dead(
-                player_entity) == False:
+        if get_set_is_ennemy_dead_and_add_player_money_if_it_is_dead(player_list, pseudonyme, current_ennemy) == True and get_if_player_dead(player_entity) == False:
             print("{} is dead.".format(current_ennemy_type))
 
             return 'ennemy dead'
@@ -514,19 +536,37 @@ def battle_check_player_first(player_list, pseudonyme, player_entity, current_en
 
         elif get_if_player_dead(player_entity) == True:
             print("You died. your name will forever be forgotten. May you and your miserable adventure go to the void and never return.")
-            del player_list[pseudonyme]
+
+            return 'player dead'
 
 
 def battle_check_ennemy_first(player_list, pseudonyme, player_entity, current_ennemy, current_ennemy_type, player_energy_class, player_attack_points_on_ennemy, player_energy_used, current_ennemy_attack_points_on_player):
 
     while get_if_player_dead(player_entity) == False and get_set_is_ennemy_dead_and_add_player_money_if_it_is_dead(player_list, pseudonyme, current_ennemy) == False:
 
+        ennemy_attack_on_player(current_ennemy_attack_points_on_player, player_entity, current_ennemy)
+        show_player_stats(player_entity)
+
+        if get_set_is_ennemy_dead_and_add_player_money_if_it_is_dead(player_list, pseudonyme, current_ennemy) == True and get_if_player_dead(player_entity) == False:
+            print("{} is dead.".format(current_ennemy_type))
+
+            return 'ennemy dead'
+
+        elif can_player_attack(player_entity, player_energy_class) == False:
+            print("You cannot attack yet, you are out of {}".format(player_energy_class.lower()))
+            mana_vigor_regeneration(player_entity, player_energy_class)
+            continue
+
+        elif get_if_player_dead(player_entity) == True:
+            print("You died. your name will forever be forgotten. May you and your miserable adventure go to the void and never return.")
+
+            return 'player dead'
+
         player_attack_on_ennemy(player_entity, player_attack_points_on_ennemy, current_ennemy, player_energy_class, player_energy_used)
         print("You used {} {} but regenerated 5 {}".format(player_energy_used, player_energy_class, player_energy_class))
         show_current_ennemy_stats(current_ennemy)
 
-        if get_set_is_ennemy_dead_and_add_player_money_if_it_is_dead(player_list, pseudonyme, current_ennemy) == True and get_if_player_dead(
-                player_entity) == False:
+        if get_set_is_ennemy_dead_and_add_player_money_if_it_is_dead(player_list, pseudonyme, current_ennemy) == True and get_if_player_dead(player_entity) == False:
             print("{} is dead.".format(current_ennemy_type))
 
             return 'ennemy dead'
@@ -538,25 +578,8 @@ def battle_check_ennemy_first(player_list, pseudonyme, player_entity, current_en
 
         elif get_if_player_dead(player_entity) == True:
             print("You died. your name will forever be forgotten. May you and your miserable adventure go to the void and never return.")
-            del player_list[pseudonyme]
 
-        ennemy_attack_on_player(current_ennemy_attack_points_on_player, player_entity, current_ennemy)
-        show_player_stats(player_entity)
-
-        if get_set_is_ennemy_dead_and_add_player_money_if_it_is_dead(player_list, pseudonyme, current_ennemy) == True and get_if_player_dead(
-                player_entity) == False:
-            print("{} is dead.".format(current_ennemy_type))
-
-            return 'ennemy dead'
-
-        elif can_player_attack(player_entity, player_energy_class) == False:
-            print("You cannot attack yet, you are out of {}".format(player_energy_class.lower()))
-            mana_vigor_regeneration(player_entity, player_energy_class)
-            continue
-
-        elif get_if_player_dead(player_entity) == True:
-            print("You died. your name will forever be forgotten. May you and your miserable adventure go to the void and never return.")
-            del player_list[pseudonyme]
+            return 'player dead'
 
 
 def battle(player_list, pseudonyme, current_ennemy):
@@ -572,25 +595,26 @@ def battle(player_list, pseudonyme, current_ennemy):
         print("You found a {} !".format(current_ennemy_type))
         show_current_ennemy_stats(current_ennemy)
 
-        is_ennemy_dead = battle_check_player_first(player_list, pseudonyme, player_entity, current_ennemy, current_ennemy_type, player_energy_class, player_attack_points_on_ennemy, player_energy_used, current_ennemy_attack_points_on_player)
+        who_dead = battle_check_player_first(player_list, pseudonyme, player_entity, current_ennemy, current_ennemy_type, player_energy_class, player_attack_points_on_ennemy, player_energy_used, current_ennemy_attack_points_on_player)
+        if who_dead == 'ennemy dead':
+            del current_ennemy
+            show_player_stats(player_entity)
 
-        if is_ennemy_dead == 'ennemy dead':
-            show_player_stats(player_entity)  ################################################################################################################################################################
-            current_ennemy = current_ennemy_entity_maker(player_list, pseudonyme)
-
-            return current_ennemy
+        elif who_dead == 'player dead':
+            return 'del player_list'
 
     elif who_attacks_first == 'ENNEMY':
         print("A {} found you !".format(current_ennemy_type))
         show_current_ennemy_stats(current_ennemy)
 
-        is_ennemy_dead = battle_check_ennemy_first(player_list, pseudonyme, player_entity, current_ennemy, current_ennemy_type, player_energy_class, player_attack_points_on_ennemy, player_energy_used, current_ennemy_attack_points_on_player)
+        who_dead = battle_check_ennemy_first(player_list, pseudonyme, player_entity, current_ennemy, current_ennemy_type, player_energy_class, player_attack_points_on_ennemy, player_energy_used, current_ennemy_attack_points_on_player)
 
-        if is_ennemy_dead == 'ennemy dead':
-            show_player_stats(player_entity)  ################################################################################################################################################
-            current_ennemy = current_ennemy_entity_maker(player_list, pseudonyme)
+        if who_dead == 'ennemy dead':
+            del current_ennemy
+            show_player_stats(player_entity)
 
-            return current_ennemy
+        elif who_dead == 'player dead':
+            return 'del player_list'
 
 
 def get_set_is_ennemy_dead_and_add_player_money_if_it_is_dead(player_list, pseudonyme, current_ennemy):
@@ -603,6 +627,7 @@ def get_set_is_ennemy_dead_and_add_player_money_if_it_is_dead(player_list, pseud
     if current_ennemy_hp <= 0:
         player_entity.set_stat_value('KILLCOUNT', player_kill_count + 1)
         player_entity.set_stat_value('MONEY', player_money + current_ennemy_money_earnable)
+        del current_ennemy
 
         return True
 
@@ -931,7 +956,7 @@ def login(player_list):
     if len(player_list) > 0:
         show_player_list(player_list)
 
-    pseudonyme = input("""What is your pseudonyme?:
+    pseudonyme = input("""What is your pseudonyme ?
             >>> """)
 
     if player_in_player_list(player_list, pseudonyme) == False:
@@ -993,22 +1018,21 @@ def main(player_list):
     start_screen()
     player_list, pseudonyme, password, player_entity = login(player_list)
     welcome(pseudonyme, player_entity.get_player_stats()['CHAPTER'])
-    current_ennemy = current_ennemy_entity_maker(player_list, pseudonyme)
 
     end = False
     while end == False:
 
         player_list = player_entity.player_level_up(player_list, pseudonyme)
         ask_change_chapter(player_list, pseudonyme, player_entity)
+        do_quit = get_menu_choice(player_entity, player_list, pseudonyme)
 
-        do_quit = get_menu_choice(player_entity, player_list, pseudonyme, current_ennemy)
+        if do_quit == 'quit':
+            answer_buy_again = check_answer_get_yes_no("Are you sure you want to quit ?")
+            if answer_buy_again == 'yes':
+                end = True
 
-        current_ennemy = battle(player_list, pseudonyme, current_ennemy)
-
-    if do_quit == 'quit':
-        answer_buy_again = check_answer_get_yes_no("Are you sure you want to quit ?")
-        if answer_buy_again == 'yes':
-            end = True
+        if do_quit == 'del player_list':
+            del player_list[pseudonyme]
 
 player_list = charge_file()
 main(player_list)
