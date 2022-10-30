@@ -1,0 +1,1 @@
+moblist = (spider, slime, skeleton, bat)
