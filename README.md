@@ -1,3 +1,3 @@
 # Python-Projects
 
-RPG Python project
+RPG Python3 project (Object Oriented Programming training)
