@@ -8,7 +8,7 @@
 import DataPack.DefMod
 
 
-# Charging Data Files #
+# Loading Data Files #
 
 player_list = DataPack.DefMod.charge_file()
 
